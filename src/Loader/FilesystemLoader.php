@@ -221,9 +221,14 @@ class FilesystemLoader implements LoaderInterface, ExistsLoaderInterface, Source
         }
 
         try {
-            $this->validateName($name);
+            // $this->validateName($name);
 
             list($namespace, $shortname) = $this->parseName($name);
+
+            // Fix a security issue on filesystem loader (possibility to load a template outside a configured directory)
+            // https://github.com/twigphp/Twig/security/advisories/GHSA-52m2-vc4m-jj33
+            // https://github.com/twigphp/Twig/pull/3745
+            $this->validateName($shortname);
         } catch (LoaderError $e) {
             if (!$throw) {
                 return false;
